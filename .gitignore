@@ -1,0 +1,6 @@
+.tools/
+.references/
+.inspect.py
+.sites-runtime/
+*.zip
+node_modules/
