@@ -5,7 +5,7 @@ Web eksperimen interaktif yang dibangun menggunakan deteksi gestur MediaPipe & T
 ## 🌐 Akses Publik (GitHub Pages)
 
 Web ini aktif di:
-👉 **https://dukewilz.github.io/web/**
+👉 **https://dukewilz.github.io/Autarkeia/**
 
 ---
 
@@ -17,5 +17,5 @@ Jika diisi pada kolom **Custom Domain** di GitHub Pages, GitHub akan mengira dom
 
 ### Solusi:
 - Cukup gunakan URL gratis dari GitHub Pages:
-  👉 **https://dukewilz.github.io/web/**
+  👉 **https://dukewilz.github.io/Autarkeia/**
 - Jika ingin nama kustom gratis (misal: `autarkeia.vercel.app`), Anda bisa mendeploy ke **Vercel** dengan 1-klik menghubungkan repo ini.
