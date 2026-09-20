@@ -100,6 +100,36 @@ const motionStopped = () => reduced.matches || document.body.classList.contains(
 let selected = -1, elapsed = 0;
 let pickerWidth = 0, lastFrame = 0;
 const panelAnimations = [];
+// Reserve the tallest text slot across all topics at the current responsive width.
+// Measure only on resize/font load, never during a carousel transition.
+function anchorTopicLayout() {
+  const panel = $('#topic-panel'), width = panel.clientWidth;
+  if (!width) return;
+  const slots = [['#topic-category','category'],['#topic-heading','heading'],['#topic-description','description'],['#topic-note','note']];
+  const probe = document.createElement('article');
+  probe.className = 'topic-panel';
+  probe.setAttribute('aria-hidden','true');
+  Object.assign(probe.style,{position:'fixed',left:'-10000px',top:'0',width:width+'px',visibility:'hidden',pointerEvents:'none',minHeight:'0'});
+  document.body.append(probe);
+  for (const [selector,key] of slots) {
+    const original = $(selector), sample = original.cloneNode(false);
+    sample.removeAttribute('id');sample.style.minHeight='0';sample.style.display='block';
+    probe.replaceChildren(sample);
+    let tallest=0;
+    for (const topic of topics) { sample.textContent=topic[key];tallest=Math.max(tallest,sample.getBoundingClientRect().height); }
+    original.style.minHeight=Math.ceil(tallest)+'px';
+  }
+  probe.remove();
+}
+let measuredPanelWidth=0, layoutFrame=0;
+new ResizeObserver(([entry])=>{
+  const width=entry.contentRect.width;
+  if(Math.abs(width-measuredPanelWidth)<1)return;
+  measuredPanelWidth=width;cancelAnimationFrame(layoutFrame);layoutFrame=requestAnimationFrame(anchorTopicLayout);
+}).observe($('#topic-panel'));
+document.fonts?.ready.then(anchorTopicLayout);
+// Decode each local preview once, before carousel interaction.
+for(const topic of topics){const image=new Image();image.src=topic.image;image.decode?.().catch(()=>{});}
 
 function renderCheatsheet(topic) {
   $('#cheatsheet-title').textContent = `${topic.name} essentials`;
@@ -151,7 +181,8 @@ function selectTopic(index, direction = 0) {
 
   $('#topic-guide').href = topic.link; $('#topic-guide').textContent = `Read the ${topic.name} guide ↗`;
   buttons.forEach((button, i) => button.setAttribute('aria-pressed', i === selected));
-  renderCheatsheet(topic);
+  if ($('#cheatsheet').open) renderCheatsheet(topic);
+  $('#cheatsheet-title').textContent = `${topic.name} essentials`;
   panelAnimations.splice(0).forEach(animation => animation.cancel());
   if (!motionStopped()) {
     for (const element of [$('#topic-panel')]) {
@@ -165,33 +196,35 @@ function selectTopic(index, direction = 0) {
 }
 
 // WallpaperPicker-style: active card expands and centers, side cards tilt and shrink
+const cardAnimations = new Map(), cardOffsets = new Map();
 function layoutPicker() {
-  if (!pickerWidth && picker) pickerWidth = picker.getBoundingClientRect().width || 540;
-  const gap = pickerWidth < 400 ? 12 : 18;
-  const activeWidth = pickerWidth * .57;
-  const sideWidth = pickerWidth * .19;
-  buttons.forEach((button, i) => {
-    const topic = topics[i];
-    const offset = i - selected;
-    // Wrap distance for circular layout
-    const wrappedOffset = (() => {
-      let o = offset;
-      if (o > topics.length / 2) o -= topics.length;
-      if (o < -topics.length / 2) o += topics.length;
-      return o;
-    })();
-    const wrappedDist = Math.abs(wrappedOffset);
-    const isActive = wrappedOffset === 0;
-    const x = isActive ? 0 : Math.sign(wrappedOffset) * ((activeWidth + sideWidth) / 2 + gap + (wrappedDist - 1) * (sideWidth + gap));
-    button.style.width = (isActive ? activeWidth : sideWidth) + 'px';
-    button.style.transform = `translate(-50%,-50%) translateX(${x}px) skewX(-10deg) scaleY(${Math.max(.65, 1 - wrappedDist * .12)})`;
-    button.style.zIndex = String(10 - wrappedDist);
-    button.style.opacity = wrappedDist > 2 ? '.2' : isActive ? '1' : String(.5 + (1 - wrappedDist * .18));
-    // Position thumbnail inside card
-    const thumbImg = button.querySelector('.picker-card-thumb img');
-    if (thumbImg && topic.image) {
-      thumbImg.style.objectPosition = topic.thumbPosition || topic.imagePosition || 'left top';
+  if (!pickerWidth) return;
+  const gap = pickerWidth < 400 ? 12 : 18, activeWidth = pickerWidth*.57, sideWidth=pickerWidth*.19;
+  // Read current transforms together before writing styles (including interrupted transitions).
+  const previous = buttons.map(button=>({transform:getComputedStyle(button).transform,opacity:getComputedStyle(button).opacity}));
+  buttons.forEach((button,i)=>{
+    let offset=i-selected;
+    if(offset>2)offset-=4;if(offset< -2)offset+=4;
+    const distance=Math.abs(offset),isActive=offset===0;
+    const x=isActive?0:Math.sign(offset)*((activeWidth+sideWidth)/2+gap+(distance-1)*(sideWidth+gap));
+    const transform=`translate(-50%,-50%) translateX(${x}px) skewX(-10deg) scale(${isActive?1:sideWidth/activeWidth},${Math.max(.65,1-distance*.12)})`;
+    const opacity=isActive?1:.5+(1-distance*.18);
+    const oldOffset=cardOffsets.get(button), recycled=oldOffset!==undefined&&Math.abs(offset-oldOffset)>2;
+    cardAnimations.get(button)?.cancel();
+    button.style.width=activeWidth+'px';button.style.transform=transform;
+    button.style.opacity=opacity;button.style.zIndex=String(10-distance);
+    const overlay=button.querySelector('.picker-card-overlay');
+    if(overlay){overlay.style.transition=motionStopped()||recycled?'none':'transform 480ms cubic-bezier(.22,1,.36,1)';overlay.style.transform=`scaleX(${isActive?1:activeWidth/sideWidth})`;}
+    if(!motionStopped()&&oldOffset!==undefined){
+      // Recycled cards appear at the outer edge instead of flying across the selected card.
+      const animation=button.animate(
+        recycled?[{transform,opacity:0},{transform,opacity}]:[{transform:previous[i].transform,opacity:previous[i].opacity},{transform,opacity}],
+        {duration:recycled?240:480,delay:recycled?150:0,easing:'cubic-bezier(.22,1,.36,1)',fill:'backwards'});
+      cardAnimations.set(button,animation);
     }
+    cardOffsets.set(button,offset);
+    const thumb=button.querySelector('.picker-card-thumb img');
+    if(thumb)thumb.style.objectPosition=topics[i].thumbPosition||topics[i].imagePosition||'left top';
   });
 }
 
@@ -209,6 +242,7 @@ let touchStart;
 picker.addEventListener('touchstart', e => { const t=e.touches[0]; touchStart={x:t.clientX,y:t.clientY}; },{passive:true});
 picker.addEventListener('touchend', e => { if(!touchStart)return;const t=e.changedTouches[0],dx=t.clientX-touchStart.x,dy=t.clientY-touchStart.y;touchStart=null;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.5){const direction=dx<0?1:-1;selectTopic(selected+direction,direction)} },{passive:true});
 new ResizeObserver(([entry]) => {pickerWidth=entry.contentRect.width;layoutPicker()}).observe(picker);
+$('#cheatsheet').addEventListener('toggle',()=>{if($('#cheatsheet').open)renderCheatsheet(topics[selected]);});
 selectTopic(0);
 
 // Screenshot modal viewer
@@ -252,7 +286,9 @@ function drawDust(time){
     const drift = Math.sin(time/9000+i*0.7)*14;
     const x=m.x*width+drift;
     const y=((m.y*height-time*.006*m.speed)%height+height)%height;
-    const alpha = 0.25 + Math.sin(time/4000+i)*0.12;
+    const altitude=Math.max(0,Math.min(1,y/height));
+    const edgeFade=Math.pow(altitude,1.7)*Math.min(1,(1-altitude)*12);
+    const alpha = (0.20 + Math.sin(time/4000+i)*0.06)*edgeFade;
     const colors=['#c8b4e1','#e7c0a1','#7ab8e8'];
     ctx.fillStyle=colors[m.hue===265?0:m.hue===30?1:2]+(Math.round(alpha*255).toString(16).padStart(2,'0'));
     ctx.beginPath();
@@ -262,7 +298,7 @@ function drawDust(time){
 }
 addEventListener('resize',resizeDust);resizeDust();
 document.addEventListener('visibilitychange',()=>{document.body.classList.toggle('page-hidden',document.hidden);lastFrame=0});
-const settleMotion=()=>{if(motionStopped()){panelAnimations.splice(0).forEach(a=>a.cancel());revealElements.forEach(e=>e.classList.add('revealed'));layoutPicker(elapsed)}};
+const settleMotion=()=>{if(motionStopped()){cardAnimations.forEach(a=>a.cancel());panelAnimations.splice(0).forEach(a=>a.cancel());revealElements.forEach(e=>e.classList.add('revealed'));layoutPicker(elapsed)}};
 new MutationObserver(settleMotion).observe(document.body,{attributes:true,attributeFilter:['class']});
 reduced.addEventListener('change',settleMotion);
 

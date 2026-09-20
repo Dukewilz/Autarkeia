@@ -7,13 +7,14 @@
   <meta name="description" content="Autarkeia — where gesture, code, and philosophy converge. Explore hand-tracked particles and the foundations of the web.">
   <title>Autarkeia — Learn. Create. Explore.</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2309090e'/%3E%3Cpath d='M6 25 16 6l10 19M11 19h10' fill='none' stroke='%23dfbda0' stroke-width='2'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=r9">
-  <link rel="stylesheet" href="experience.css?v=r9">
+  <link rel="stylesheet" href="style.css?v=practice-1">
+  <link rel="stylesheet" href="experience.css?v=practice-1">
 </head>
 <body>
   <a class="skip" href="#learn">Skip to learning</a>
 
   <!-- Cosmic background layers -->
+  <video id="black-hole-video" muted loop playsinline preload="metadata" poster="media/black-hole-poster.jpg" aria-hidden="true" tabindex="-1"><source src="media/black-hole.mp4" type="video/mp4"></video>
   <canvas id="universe" aria-hidden="true"></canvas>
   <canvas id="aurora" aria-hidden="true"></canvas>
   <div class="ambient" aria-hidden="true">
@@ -131,6 +132,14 @@
         <div id="cheatsheet-content" class="cheatsheet-content"></div>
       </details>
       <p class="learning-connection" data-reveal>HTML builds the page. CSS shapes it. JavaScript responds to you. Python works with data and server-side logic.</p>
+      <section class="practice" aria-labelledby="practice-title">
+        <div class="practice-heading"><div><h3 id="practice-title">Try it yourself.</h3><p id="practice-hint"></p></div><span id="practice-language">HTML</span></div>
+        <div class="practice-grid">
+          <div class="practice-editor"><label for="practice-code" id="practice-file">index.html</label><textarea id="practice-code" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="practice-hint"></textarea></div>
+          <div class="practice-result"><span>Output</span><iframe id="practice-preview" title="Your code preview" sandbox="" referrerpolicy="no-referrer"></iframe><pre id="practice-output" hidden></pre></div>
+        </div>
+        <div class="practice-actions"><button id="practice-run" class="button primary">Run code ↗</button><button id="practice-stop" class="text-link" hidden>Stop</button><button id="practice-reset" class="text-link">Reset example</button><span id="practice-status" role="status">Ready</span></div>
+      </section>
     </section>
 
     <!-- SCENE 4: Experiment -->
@@ -216,8 +225,9 @@
     </div>
   </dialog>
 
-  <script type="module" src="app.js?v=r9"></script>
-  <script type="module" src="experience.js?v=r9"></script>
-  <script type="module" src="scenes.js?v=r9"></script>
+  <script type="module" src="app.js?v=practice-1"></script>
+  <script type="module" src="experience.js?v=practice-1"></script>
+  <script type="module" src="scenes.js?v=practice-1"></script>
+  <script type="module" src="practice.js?v=1"></script>
 </body>
 </html>

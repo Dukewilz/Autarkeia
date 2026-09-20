@@ -10,6 +10,23 @@ let busy = false, lastWheel = 0, sum = 0, animations = [], wheelLocked = false;
 const navigation = document.createElement('nav');
 navigation.className = 'scene-navigation'; navigation.setAttribute('aria-label','Page sections');
 const names = ['Home','About','Learn','Experiment','Closing'];
+let pillTimer, bottomHover=false;
+function showPill(){
+  navigation.classList.add('is-visible');clearTimeout(pillTimer);
+  pillTimer=setTimeout(()=>{if(!bottomHover&&!navigation.matches(':hover,:focus-within'))navigation.classList.remove('is-visible');},1200);
+}
+addEventListener('pointermove',e=>{
+  const wasBottom=bottomHover;
+  bottomHover=e.clientY>=innerHeight-10;
+  if(bottomHover||wasBottom)showPill();
+},{passive:true});
+document.addEventListener('pointerleave',()=>{bottomHover=false;showPill();});
+navigation.addEventListener('pointerenter',()=>{clearTimeout(pillTimer);});
+navigation.addEventListener('pointerleave',()=>{bottomHover=false;showPill();});
+navigation.addEventListener('focusin',showPill);
+navigation.addEventListener('focusout',showPill);
+addEventListener('wheel',showPill,{passive:true});
+addEventListener('touchmove',showPill,{passive:true});
 scenes.forEach((scene, i) => {
   scene.classList.add('scene'); scene.tabIndex = -1;
   const button = document.createElement('button');
@@ -18,6 +35,7 @@ scenes.forEach((scene, i) => {
   // Hide navbar when content inside scene is scrolled
   let timer;
   scene.addEventListener('scroll', () => {
+    showPill();
     document.querySelector('#navbar').classList.add('hidden');
     clearTimeout(timer); timer = setTimeout(() => document.querySelector('#navbar').classList.remove('hidden'), 650);
   }, {passive: true});
@@ -36,6 +54,7 @@ function sync() {
 async function go(index, updateHash = true) {
   if (index < 0 || index >= scenes.length || index === current || busy) return;
   busy = true; wheelLocked = true;
+  showPill();
   const direction = index > current ? 1 : -1;
   const previous = scenes[current];
   const next = scenes[index];
@@ -44,19 +63,25 @@ async function go(index, updateHash = true) {
   document.querySelector('#navbar').classList.add('hidden');
   if (updateHash) history.pushState(null, '', '#' + next.id);
   if (!still()) {
-    const options = {duration: 820, easing: 'cubic-bezier(.76,0,.24,1)', fill: 'both'};
-    animations = [
-      previous.animate([
-        {opacity: 1, transform: 'scale(1)', filter: 'blur(0px)'},
-        {opacity: 0, transform: `translateY(${-direction * 11}%) scale(.91)`, filter: 'blur(7px)'}
-      ], options),
-      next.animate([
-        {opacity: .25, transform: `translateY(${direction * 22}%) scale(1.07)`, clipPath: direction > 0 ? 'inset(100% 0 0 0)' : 'inset(0 0 100% 0)'},
-        {opacity: 1, transform: 'none', clipPath: 'inset(0 0 0 0)'}
-      ], options)
+    const options = {duration: 950, easing: 'cubic-bezier(.65,0,.2,1)', fill: 'both'};
+    const variants = [
+      {out:{transform:'scale(1.12)',opacity:0},start:{transform:'scale(.88)',clipPath:'circle(0% at 76% 46%)'},end:{transform:'none',clipPath:'circle(150% at 76% 46%)'}},
+      {out:{transform:`translateX(${-direction*18}%) rotate(${-direction*2}deg) scale(.94)`,opacity:0},start:{transform:`translateX(${direction*12}%) scale(1.04)`,clipPath:'polygon(0 0,0 0,0 100%,0 100%)'},end:{transform:'none',clipPath:'polygon(0 0,120% 0,100% 100%,0 100%)'}},
+      {out:{transform:'scale(.78)',opacity:0},start:{transform:'scale(1.22)',clipPath:'inset(40% 0 40% 0)'},end:{transform:'none',clipPath:'inset(0% 0 0% 0)'}},
+      {out:{transform:`perspective(1200px) translateX(${-direction*15}%) rotateY(${direction*9}deg)`,opacity:0},start:{transform:`perspective(1200px) translateX(${direction*22}%) rotateY(${-direction*9}deg)`,opacity:0},end:{transform:'perspective(1200px) translateX(0) rotateY(0deg)',opacity:1}}
     ];
+    const variant=variants[(direction>0?index-1:index)%variants.length];
+    next.style.zIndex='4';
+    animations=[previous.animate([{transform:'none',opacity:1},variant.out],options),next.animate([variant.start,variant.end],options)];
+    // The background moves on a different plane, creating depth through each cut.
+    for(const layer of document.querySelectorAll('#universe,#aurora'))animations.push(layer.animate([
+      {transform:'translateX(0) scale(1)'},
+      {transform:`translateX(${-direction*(layer.id==='universe'?3:6)}%) scale(1.06)`,offset:.5},
+      {transform:'translateX(0) scale(1)'}
+    ],options));
     await Promise.allSettled(animations.map(a => a.finished));
     animations.forEach(a => a.cancel()); animations = [];
+    next.style.removeProperty('z-index');
   }
   previous.classList.remove('scene-leaving');
   busy = false; sum = 0; lastWheel = performance.now();
