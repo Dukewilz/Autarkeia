@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#09090e">
+  <meta name="description" content="Autarkeia — where gesture, code, and philosophy converge. Explore hand-tracked particles and the foundations of the web.">
+  <title>Autarkeia — Learn. Create. Explore.</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2309090e'/%3E%3Cpath d='M6 25 16 6l10 19M11 19h10' fill='none' stroke='%23dfbda0' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css?v=practice-1">
+  <link rel="stylesheet" href="experience.css?v=practice-1">
+  <link rel="stylesheet" href="waste.css?v=2">
+  <link rel="stylesheet" href="surfaces.css?v=native-9">
+  <link rel="stylesheet" href="intro.css?v=3">
+</head>
+<body class="intro-active">
+  <div id="cinematic-intro" aria-label="Autarkeia cinematic introduction">
+    <div class="intro-droplet" aria-hidden="true"></div>
+    <div class="intro-impact" aria-hidden="true">
+      <i class="intro-ripple ripple-one"></i><i class="intro-ripple ripple-two"></i><i class="intro-ripple ripple-three"></i>
+      <i class="intro-splash splash-one"></i><i class="intro-splash splash-two"></i><i class="intro-splash splash-three"></i><i class="intro-splash splash-four"></i>
+    </div>
+    <button id="intro-skip" type="button">Skip intro</button>
+  </div>
+  <a class="skip" href="#learn">Skip to learning</a>
+
+  <!-- Cosmic background layers -->
+  <video id="black-hole-video" muted loop playsinline preload="metadata" poster="media/black-hole-poster.jpg" aria-hidden="true" tabindex="-1"><source src="media/black-hole.mp4" type="video/mp4"></video>
+  <canvas id="universe" aria-hidden="true"></canvas>
+  <canvas id="aurora" aria-hidden="true"></canvas>
+  <div class="ambient" aria-hidden="true">
+    <div class="ambient-cloud cloud-violet"></div>
+    <div class="ambient-cloud cloud-blue"></div>
+    <div class="ambient-cloud cloud-amber"></div>
+    <div class="ambient-ring"></div>
+  </div>
+  <canvas id="ambient-dust" aria-hidden="true"></canvas>
+
+  <header id="navbar">
+    <a class="brand" href="#home"><span class="brand-mark">Λ</span> AUTARKEIA</a>
+    <nav aria-label="Main navigation">
+      <a href="#prologue">About</a>
+      <a href="#waste-intro">Waste & AI</a>
+      <a href="#learn">Learn</a>
+      <a href="#experiment">Experiment</a>
+    </nav>
+    <a class="nav-cta" href="#experiment">Try the experiment <span>↗</span></a>
+  </header>
+
+  <main>
+    <!-- SCENE 1: Hero -->
+    <section id="home" class="hero">
+      <h1 class="enter">Autarkeia<span class="title-star" aria-hidden="true">✳</span></h1>
+      <h2 class="hero-statement enter">Learn from reality.<br><em>Create something of your own.</em></h2>
+      <p class="hero-copy enter">Where the digital and real converge —<br>explore the web, then shape matter with your hands.</p>
+      <div class="hero-actions enter">
+        <a class="button primary" href="#learn">Start exploring <span>↘</span></a>
+        <a class="text-link" href="#experiment">Try hand tracking <span>↗</span></a>
+      </div>
+    </section>
+
+    <!-- SCENE 2: Prologue / Philosophy -->
+    <section id="prologue" class="prologue section">
+      <h2 data-reveal>If you find no light<br>on your path —<br><em>become the light.</em></h2>
+      <div class="prologue-right" data-reveal>
+        <p>Pay attention to what you experience. Ask how it works. Learn enough to change it.</p>
+        <p>Live your values honestly, in full view of whatever you call God or the universe. Act with courage and take responsibility for your impact — not for the approval of others, but because it is the right thing to do.</p>
+        <p>What you build here is yours. Let it matter to someone beyond yourself.</p>
+      </div>
+    </section>
+
+    <section id="waste-intro" class="section waste-section waste-intro" data-scene-name="Waste & AI" aria-labelledby="waste-title">
+      <div class="waste-intro-grid">
+        <div><h2 id="waste-title">A different way<br>to see <em>what remains.</em></h2><p class="waste-lead">A bottle. A sheet of paper. A second possibility. Teach a machine to recognise everyday waste, then explore what you can do with it.</p><a class="button primary waste-inline" href="#waste-lab">Explore the waste lab <span>↗</span></a><a class="waste-source" href="https://teachablemachine.withgoogle.com/" target="_blank" rel="noopener noreferrer">Meet Google Teachable Machine ↗</a></div>
+        <div class="tm-preview" aria-label="Interactive explanation of the Teachable Machine workflow">
+          <div class="tm-video-frame"><video id="tm-preview-video" controls playsinline preload="none" poster="media/teachable-machine-poster.jpg" aria-label="Teachable Machine introduction video"><source src="media/teachable-machine-preview.webm" type="video/webm"><source src="media/teachable-machine-preview.mp4" type="video/mp4">Your browser cannot play this video. <a href="https://youtu.be/T2qQGqZxkD0">Watch the original video.</a></video></div>
+          <div class="tm-preview-caption"><span>Teachable Machine, in action.</span><a href="https://youtu.be/T2qQGqZxkD0" target="_blank" rel="noopener noreferrer" aria-label="Watch the original Teachable Machine video on YouTube">YouTube ↗</a></div>
+          <div class="tm-tabs" role="tablist" aria-label="Training workflow"><button id="tm-tab-0" role="tab" aria-selected="true" aria-controls="tm-panel-0" data-tm-step="0">01 Gather</button><button id="tm-tab-1" role="tab" aria-selected="false" aria-controls="tm-panel-1" tabindex="-1" data-tm-step="1">02 Train</button><button id="tm-tab-2" role="tab" aria-selected="false" aria-controls="tm-panel-2" tabindex="-1" data-tm-step="2">03 Export</button></div>
+          <div id="tm-explanation" class="tm-explanation-deck">
+            <div id="tm-panel-0" class="tm-step-panel is-active" role="tabpanel" aria-labelledby="tm-tab-0"><h3>Start with examples.</h3><p>Group images into classes. Vary the object, background, distance and lighting so the model learns more than one photograph.</p></div>
+            <div id="tm-panel-1" class="tm-step-panel" role="tabpanel" aria-labelledby="tm-tab-1" aria-hidden="true" inert><h3>Let the model learn patterns.</h3><p>Train a classifier with your labelled examples. Test it on new images—including unfamiliar objects—to understand its limits.</p></div>
+            <div id="tm-panel-2" class="tm-step-panel" role="tabpanel" aria-labelledby="tm-tab-2" aria-hidden="true" inert><h3>Bring it into the browser.</h3><p>Export your model and class labels. This lab runs your five-class model locally, then adds a separate AI image review.</p></div>
+          </div>
+        </div>
+      </div>
+      <a href="#waste-questions" class="text-link waste-next">Why use AI for this? ↓</a>
+    </section>
+
+    <section id="waste-questions" class="section waste-section" data-scene-name="Why this matters" aria-labelledby="waste-why">
+      <div class="waste-qa-grid"><div><h2 id="waste-why">Better questions.<br><em>Better choices.</em></h2><p class="waste-lead">Recognition is a starting point. Understanding a material—and the limits of a prediction—is what makes the result useful.</p><a href="#waste-lab" class="button primary waste-inline">Put it into practice ↗</a></div><div class="waste-questions">
+        <details open><summary>Why Teachable Machine?</summary><p>It makes machine learning tangible: collect examples, train an image model and test it on something new. This project runs its five-class model in your browser.</p></details>
+        <details><summary>Why does waste classification matter?</summary><p>Separating materials helps you choose an appropriate collection or reuse route. Local collection rules, contamination and mixed materials still determine what can actually be recycled.</p></details>
+        <details><summary>What do Gemini and OpenAI add?</summary><p>A vision-capable assistant reviews the image alongside the local prediction and explains possible materials, handling and reuse. If the first service fails, the second can be tried. The result shows which service answered.</p></details>
+        <details><summary>Does high confidence mean the answer is correct?</summary><p>No. Confidence measures the model’s preference among its trained classes. It can be confident about an unfamiliar or incorrect object. New objects and independent test images are essential for evaluating accuracy.</p></details>
+        <details><summary>Can a photo reveal the exact chemical composition?</summary><p>Usually not. Packaging marks and material specifications provide stronger evidence. The assistant distinguishes visible clues from possible materials and asks for markings when identification is uncertain.</p></details>
+        <details><summary>Where does my photo go?</summary><p>The Teachable Machine prediction runs on your device. When you select “Analyse with AI” or send a follow-up, your selected image and message are sent to the responding AI service. This website does not save your images or conversation.</p></details>
+      </div></div>
+      <p class="waste-footnote">A practical connection to responsible consumption, sustainable communities and environmental stewardship.</p>
+    </section>
+
+    <section id="waste-lab" class="section waste-section" data-scene-name="Waste lab" aria-labelledby="waste-lab-title">
+      <div class="waste-lab-heading"><div><h2 id="waste-lab-title">Small object.<br><em>New perspective.</em></h2></div><p>Place one item in the frame or upload a photo. Inspect the local prediction, then ask AI about its material and next use.</p></div>
+      <div class="waste-lab-grid">
+        <div class="waste-input waste-panel"><span id="waste-input-mode" class="waste-sr">NO IMAGE</span><div class="waste-view"><video id="waste-camera" muted playsinline hidden></video><canvas id="waste-capture" hidden></canvas><div id="waste-empty"><span aria-hidden="true">◎</span><strong>Look closer.</strong><p>One object. Good light.<br>A clear view of the material.</p></div><div class="waste-crosshair" aria-hidden="true"></div></div><div class="waste-input-actions"><button id="waste-camera-toggle" class="button waste-secondary">Enable camera</button><button id="waste-upload-trigger" class="button waste-secondary" type="button">Upload photo ↗</button><input id="waste-upload" type="file" accept="image/jpeg,image/png,image/webp" hidden><button id="waste-snapshot" class="button primary" disabled>Capture & classify</button></div><p id="waste-status" role="status">Ready for a photo. Local classification stays on this device.</p></div>
+        <article class="waste-output waste-panel" aria-labelledby="waste-result-title"><div id="waste-result"><h3 id="waste-result-title">Every material<br>has a next chapter.</h3><p>Capture or upload an item to explore its possible composition, impact and next use.</p><div class="waste-report-placeholders"><span>Material & composition</span><span>Handling & environmental impact</span><span>Reuse & value</span></div></div><div class="waste-ai-actions"><span id="waste-provider" class="waste-provider-badge"></span><button id="waste-analyse" class="button primary" disabled>Analyse with AI ↗</button><p>Shares this image with an AI provider. Exact composition may require checking the label.</p></div></article>
+      </div>
+      <div class="waste-benchmark"><div><span class="waste-result-label">MODEL CONFIDENCE</span><h3>See the prediction.<br><em>Question the certainty.</em></h3><p>Scores from your five-class Teachable Machine model for the selected photo. These are confidence scores, not measured accuracy.</p><span id="waste-timing" class="waste-meta">AWAITING A CLASSIFICATION</span></div><div id="waste-bars" aria-label="Class confidence scores"><p class="waste-chart-empty">Your class scores will appear here after classification.</p></div></div>
+      <div class="waste-chat"><div class="waste-chat-heading"><h3>What comes next?</h3><span id="waste-chat-provider" class="waste-provider-badge"></span></div><p class="waste-chat-intro">Explore a material. Find a useful next step.</p><div id="waste-messages" role="log" aria-label="Conversation with the material assistant" aria-live="polite"></div><form id="waste-chat-form"><label class="waste-sr" for="waste-question">Your question</label><textarea id="waste-question" rows="2" maxlength="2000" placeholder="Ask about this material…" required></textarea><button class="button primary" id="waste-send" type="submit" aria-label="Send message">↗</button></form><div class="waste-prompts"><button type="button" data-question="How should I sort this?">Sorting</button><button type="button" data-question="What can I reuse it for?">Reuse ideas</button><button type="button" data-question="How can I identify the material?">Identify material</button></div><p id="waste-chat-status" role="status"></p></div>
+      <div class="waste-lab-bottom"><a href="https://teachablemachine.withgoogle.com/models/VXvGQ6PR-/" target="_blank" rel="noopener noreferrer">View the original model ↗</a><a href="#learn">Continue into the web →</a></div>
+    </section>
+
+    <!-- SCENE 3: Learn / Web intro -->
+    <section id="learn" class="section learning" aria-labelledby="learning-heading">
+      <div class="learning-heading" data-reveal>
+        <h2 id="learning-heading">A way into <em>the web.</em></h2>
+      </div>
+      <div class="learning-layout" data-reveal>
+        <div class="picker-side">
+          <div class="learning-picker" role="group" aria-roledescription="carousel" aria-label="Web development topics" tabindex="0">
+            <button class="picker-topic" data-topic="0" aria-label="Learn HTML" aria-pressed="true">
+              <div class="picker-card-thumb">
+                <img src="images/preview-html.png" alt="HTML preview" loading="lazy">
+              </div>
+              <div class="picker-card-overlay">
+                <img class="topic-card-logo" src="images/logo-html.png" alt="HTML5">
+                <strong>HTML</strong>
+              </div>
+            </button>
+            <button class="picker-topic" data-topic="1" aria-label="Learn CSS" aria-pressed="false">
+              <div class="picker-card-thumb">
+                <img src="images/preview-css.png" alt="CSS preview" loading="lazy">
+              </div>
+              <div class="picker-card-overlay">
+                <img class="topic-card-logo" src="images/logo-css.png" alt="CSS">
+                <strong>CSS</strong>
+              </div>
+            </button>
+            <button class="picker-topic" data-topic="2" aria-label="Learn JavaScript" aria-pressed="false">
+              <div class="picker-card-thumb">
+                <img src="images/preview-javascript.png" alt="JavaScript preview" loading="lazy">
+              </div>
+              <div class="picker-card-overlay">
+                <img class="topic-card-logo" src="images/logo-javascript.png" alt="JS">
+                <strong>JavaScript</strong>
+              </div>
+            </button>
+            <button class="picker-topic" data-topic="3" aria-label="Learn Python" aria-pressed="false">
+              <div class="picker-card-thumb">
+                <img src="images/preview-python.png" alt="Python preview" loading="lazy">
+              </div>
+              <div class="picker-card-overlay">
+                <img class="topic-card-logo" src="images/logo-python.png" alt="Python">
+                <strong>Python</strong>
+              </div>
+            </button>
+          </div>
+          <div class="picker-navigation"><button id="topic-prev" class="round-button" aria-label="Previous topic">←</button><span id="topic-position" aria-live="polite" aria-atomic="true">HTML · 1 of 4</span><button id="topic-next" class="round-button" aria-label="Next topic">→</button></div>
+        </div>
+        <article id="topic-panel" class="topic-panel" aria-labelledby="topic-heading">
+          <span id="topic-category" class="topic-category">The content</span>
+          <h3 id="topic-heading">Give a page its structure.</h3>
+          <p id="topic-description">HTML describes what is on a page: headings, paragraphs, links, images, and forms. Meaningful elements help browsers and assistive technology understand your content.</p>
+          <div class="code-preview" id="code-preview">
+            <div class="code-caption">
+              <div class="caption-left">
+                <span class="caption-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                <span id="code-file">index.html</span>
+              </div>
+              <div class="caption-right">
+                <span class="preview-tag">Screenshot Preview</span>
+                <button id="preview-zoom" class="preview-zoom-btn" title="View full image" aria-label="Expand preview image">⛶</button>
+              </div>
+            </div>
+            <div class="preview-screen" title="Click to view full image">
+              <img id="topic-image" src="images/preview-html.png" alt="HTML code preview in editor" loading="lazy">
+            </div>
+          </div>
+          <p id="topic-note" class="topic-note">HTML is a markup language. It gives content meaning; CSS and JavaScript add presentation and behavior.</p>
+          <a id="topic-guide" class="text-link" href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Getting_started/Your_first_website/Creating_the_content" target="_blank" rel="noopener noreferrer">Read the HTML guide ↗</a>
+        </article>
+      </div>
+      <details id="cheatsheet" class="cheatsheet" data-reveal>
+        <summary><span id="cheatsheet-title">HTML essentials</span><span class="summary-action">Open cheatsheet <span aria-hidden="true">+</span></span></summary>
+        <div id="cheatsheet-content" class="cheatsheet-content"></div>
+      </details>
+      <p class="learning-connection" data-reveal>HTML builds the page. CSS shapes it. JavaScript responds to you. Python works with data and server-side logic.</p>
+      <section class="practice" aria-labelledby="practice-title">
+        <div class="practice-heading"><div><h3 id="practice-title">Try it yourself.</h3><p id="practice-hint"></p></div><span id="practice-language">HTML</span></div>
+        <div class="practice-grid">
+          <div class="practice-editor"><label for="practice-code" id="practice-file">index.html</label><textarea id="practice-code" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="practice-hint"></textarea></div>
+          <div class="practice-result"><span>Output</span><iframe id="practice-preview" title="Your code preview" sandbox="" referrerpolicy="no-referrer"></iframe><pre id="practice-output" hidden></pre></div>
+        </div>
+        <div class="practice-actions"><button id="practice-run" class="button primary">Run code ↗</button><button id="practice-stop" class="text-link" hidden>Stop</button><button id="practice-reset" class="text-link">Reset example</button><span id="practice-status" role="status">Ready</span></div>
+      </section>
+    </section>
+
+    <!-- SCENE 4: Experiment -->
+    <section id="experiment" class="section experiment">
+      <div class="experiment-heading" data-reveal>
+        <h2>Gesture-driven particles.<br><em>Teachable Machine × MediaPipe.</em></h2>
+        <p>A real-time example combining a trained gesture model with hand-landmark tracking. Your hand controls the particle field — its pose, depth, and open or closed state all map to a live 3-D form.</p>
+      </div>
+      <div class="lab" data-reveal>
+        <div class="lab-top"><span><i class="status-dot"></i> PARTICLE FIELD</span><span id="mode-label">EXPLORATION MODE</span><button id="fullscreen" class="icon-button" aria-label="Toggle fullscreen">⛶</button></div>
+        <div class="lab-grid">
+          <div class="stage">
+            <canvas id="matter" aria-label="Interactive particle sculpture"></canvas>
+            <div class="stage-coordinates">X <span id="coord-x">0.50</span><br>Y <span id="coord-y">0.50</span></div>
+            <div class="stage-label">
+              <span id="shape-number">FORM / 02</span>
+              <h3 id="shape-name">Expansion</h3>
+              <p id="shape-description">Open your hand to spread the particles.</p>
+            </div>
+          </div>
+          <aside class="controls">
+            <label for="engine">Detection source</label>
+            <select id="engine">
+              <option value="hands">Hand tracking · MediaPipe</option>
+              <option value="image">Image model · Teachable Machine</option>
+              <option value="pose">Pose model · Teachable Machine</option>
+            </select>
+            <div class="camera-view">
+              <video id="camera" playsinline muted></video>
+              <canvas id="landmarks"></canvas>
+              <div id="camera-placeholder">
+                <span class="camera-symbol" aria-hidden="true">◎</span>
+                <strong>Camera off</strong>
+                <small>Enable it to track your hand.</small>
+              </div>
+            </div>
+            <button id="camera-toggle" class="button primary">Enable camera <span>↗</span></button>
+            <p id="camera-status" class="camera-status" role="status">Camera off. Explore with the controls below.</p>
+            <div class="privacy">Camera frames stay on your device.</div>
+            <div class="readout">
+              <span>DETECTED INPUT</span>
+              <strong id="detected">Manual exploration</strong>
+              <div id="predictions"></div>
+            </div>
+            <label for="depth">Depth <output id="depth-value">1.00×</output></label>
+            <input id="depth" type="range" min="0.45" max="2.2" step="0.01" value="1">
+            <details id="mapping-details" hidden>
+              <summary>Map model classes to forms</summary>
+              <div id="mapping"></div>
+            </details>
+          </aside>
+        </div>
+        <div class="gestures" aria-label="Explore gestures">
+          <button data-gesture="closed"><span>✊</span><div><strong>Closed hand</strong><small>Condense</small></div></button>
+          <button class="selected" data-gesture="open" aria-pressed="true"><span>✋</span><div><strong>Open hand</strong><small>Expand</small></div></button>
+          <button data-gesture="one"><span>☝</span><div><strong>One finger</strong><small>Orbit</small></div></button>
+          <button data-gesture="two"><span>✌</span><div><strong>Two fingers</strong><small>Double helix</small></div></button>
+          <button data-gesture="three"><span>Ⅲ</span><div><strong>Three fingers</strong><small>Waveform</small></div></button>
+          <button data-gesture="check"><span>✓</span><div><strong>Check gesture</strong><small>Ignite</small></div></button>
+        </div>
+        <div class="lab-footer"><span>Choose a gesture to preview its form.</span><button id="reset" class="text-link">Reset ↺</button></div>
+      </div>
+    </section>
+
+    <!-- SCENE 5: Manifesto / Closing -->
+    <section id="manifesto" class="section manifesto">
+      <h2 data-reveal>If you cannot find a light<br>on your path,<br><em>become the light.</em></h2>
+      <div class="manifesto-bottom" data-reveal>
+        <p>Learn from experience. Be honest with yourself before God or the universe, as you understand it. Create with courage, and take responsibility for your impact.</p>
+        <p>Live your values, even without the approval of others. Let what you make be useful to someone beyond yourself.</p>
+      </div>
+      <footer><a class="brand" href="#home">Λ &nbsp; AUTARKEIA</a><a href="#home">Back to top ↑</a></footer>
+    </section>
+  </main>
+
+  <dialog id="image-modal" class="image-modal" aria-label="Preview image viewer">
+    <div class="image-modal-content">
+      <div class="image-modal-top">
+        <span id="modal-title">index.html</span>
+        <button id="modal-close" class="modal-close-btn" aria-label="Close viewer">✕</button>
+      </div>
+      <img id="modal-img" src="images/preview-html.png" alt="Full size preview">
+    </div>
+  </dialog>
+
+  <script type="module" src="app.js?v=practice-1"></script>
+  <script type="module" src="experience.js?v=practice-1"></script>
+  <script type="module" src="native-scenes.js?v=1"></script>
+  <script type="module" src="practice.js?v=1"></script>
+  <script type="module" src="waste.js?v=2"></script>
+  <script type="module" src="intro.js?v=3"></script>
+</body>
+</html>

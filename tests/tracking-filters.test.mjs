@@ -1,0 +1,21 @@
+import {readFile} from 'node:fs/promises';
+import assert from 'node:assert/strict';
+const source=await readFile(new URL('../dist/tracking-filters.js',import.meta.url),'utf8');
+const {createGestureFilter,createDepthFilter}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+let filter=createGestureFilter(), current='open';
+for(let t=0;t<2000;t+=70)current=filter.update(t%140?'closed':'one',t,current);
+assert.equal(current,'open','alternating noisy predictions must not change the form');
+filter.reset();
+for(const t of [0,90,180,270])assert.equal(filter.update('closed',t,'open'),'open');
+assert.equal(filter.update('closed',360,'open'),'closed','a held gesture must be accepted');
+filter.reset();filter.update('closed',0,'open');filter.update('closed',170,'open');filter.update(null,200,'open');
+assert.equal(filter.update('closed',400,'open'),'open','lost tracking must break a pending gesture');
+filter.reset();filter.update('closed',0,'open');filter.update('closed',100,'open');
+assert.equal(filter.update('closed',900,'open'),'open','stale predictions cannot complete a hold');
+const depth=createDepthFilter();let value=1;
+for(let t=60;t<=300;t+=60)value=depth.update(1,t,value);
+value=depth.update(2.2,360,value);assert.equal(value,1,'one depth spike should be rejected');
+for(let t=420;t<2500;t+=60){const next=depth.update(1.8,t,value);assert.ok(Math.abs(next-value)<=.072001,'depth change must be rate limited');value=next;}
+assert.ok(value>1.7&&value<=1.8,'sustained movement must still reach the new depth');
+assert.equal(depth.update(NaN,2600,value),value);
+console.log('PASS: gesture jitter, intentional changes, tracking loss, stale frames, depth spikes, and depth response');

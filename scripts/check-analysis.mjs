@@ -1,0 +1,5 @@
+import {readFile} from 'node:fs/promises';
+import {createWasteAPI} from '../server/waste-api.mjs';
+const image='data:image/jpeg;base64,'+(await readFile('.references/waste-media/0-0.jpg')).toString('base64');
+const api=createWasteAPI(async(url,options)=>{const res=await fetch(url,options);if(!res.ok){const data=await res.clone().json();console.log(JSON.stringify({provider:url.includes('googleapis')?'Gemini':'OpenAI',status:res.status,code:data.error?.code,message:data.error?.message?.replace(/AQ\.[\w-]+|sk-[\w-]+/g,'[REDACTED]').slice(0,900)}))}else{const data=await res.clone().json();console.log(JSON.stringify({provider:url.includes('googleapis')?'Gemini':'OpenAI',status:res.status,finish:data.candidates?.[0]?.finishReason,hasText:!!data.candidates?.[0]?.content?.parts?.some(p=>p.text)}))}return res});
+const res=await api(new Request('http://127.0.0.1/api/waste',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'analyse',image,predictions:[]})}),process.env);const data=await res.json();console.log(JSON.stringify({status:res.status,provider:data.provider,identification:data.report?.identification,error:data.error}));
