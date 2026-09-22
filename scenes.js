@@ -36,7 +36,7 @@ function showPill(){
 }
 addEventListener('pointermove',e=>{
   const wasBottom=bottomHover;
-  bottomHover=e.clientY>=innerHeight-10;
+  bottomHover=e.clientY>=innerHeight-64;
   if(bottomHover||wasBottom)showPill();
   transitionOriginX=15+(e.clientX/innerWidth)*70;
   transitionOriginY=15+(e.clientY/innerHeight)*70;
@@ -125,6 +125,7 @@ async function go(index, updateHash = true) {
   }
   previous.classList.remove('scene-leaving');
   busy = false; sum = 0; lastWheel = performance.now();
+  setTimeout(() => { wheelLocked = false; }, 160);
   scenes[index].focus({preventScroll: true});
   document.querySelector('#navbar').classList.remove('hidden');
 }
@@ -184,7 +185,8 @@ addEventListener('popstate', () => go(Math.max(0, scenes.findIndex(s => '#' + s.
 // Check if scene content is at edge for wheel/swipe to switch
 function atEdge(direction) {
   const s = surface(scenes[current]);
-  return direction > 0 ? s.scrollTop + s.clientHeight >= s.scrollHeight - 4 : s.scrollTop <= 4;
+  const margin = 28;
+  return direction > 0 ? s.scrollTop + s.clientHeight >= s.scrollHeight - margin : s.scrollTop <= margin;
 }
 function adjacent(direction){
   return surface(scenes[current])===journey
@@ -192,23 +194,40 @@ function adjacent(direction){
     : current+direction;
 }
 
-// Ignore interactions inside active controls
-function interactive(target) {
-  return target.closest('input,select,textarea,button,video,pre,.learning-picker,[contenteditable="true"],#matter,dialog,.image-modal');
+// Ignore interactions inside controls with active internal vertical scroll or modal focus
+function interactive(target, direction = 0) {
+  if (target.closest('dialog, .image-modal')) return true;
+  const input = target.closest('textarea, select, [contenteditable="true"]');
+  if (input) {
+    if (input.matches('textarea') && direction) {
+      if (direction > 0 && input.scrollTop + input.clientHeight < input.scrollHeight - 4) return true;
+      if (direction < 0 && input.scrollTop > 4) return true;
+      return false;
+    }
+    return true;
+  }
+  const scrollable = target.closest('#waste-messages, pre');
+  if (scrollable && direction) {
+    if (direction > 0 && scrollable.scrollTop + scrollable.clientHeight < scrollable.scrollHeight - 6) return true;
+    if (direction < 0 && scrollable.scrollTop > 6) return true;
+  }
+  return false;
 }
 
 // Mouse wheel — accumulate delta, change scene when threshold passed
 addEventListener('wheel', e => {
-  if (e.ctrlKey || document.fullscreenElement || interactive(e.target) || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+  if (e.ctrlKey || document.fullscreenElement || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
   const direction = Math.sign(e.deltaY); if (!direction) return;
+  if (interactive(e.target, direction)) return;
   const now = performance.now(), gap = now - lastWheel; lastWheel = now;
   if (busy) { e.preventDefault(); return; }
-  if (wheelLocked) { if (gap < 200) { e.preventDefault(); return; } wheelLocked = false; }
+  // Allow normal scene scrolling when not at edge
   if (!atEdge(direction)) { sum = 0; return; }
+  if (wheelLocked) { if (gap < 240) { e.preventDefault(); return; } wheelLocked = false; }
   e.preventDefault();
-  if (gap > 220 || Math.sign(sum) !== direction) sum = 0;
+  if (gap > 320 || Math.sign(sum) !== direction) sum = 0;
   sum += e.deltaY * (e.deltaMode === 1 ? 16 : 1);
-  if (Math.abs(sum) > 70) go(adjacent(direction));
+  if (Math.abs(sum) > 48) go(adjacent(direction));
 }, {passive: false});
 
 // Keyboard navigation

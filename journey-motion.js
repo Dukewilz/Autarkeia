@@ -20,9 +20,13 @@ export function setupJourney(journey, chapters, still) {
   function cancelScroll(){cancelAnimationFrame(scrollFrame);scrollFrame=0;}
   // Smooth mouse-wheel impulses only; touch, keyboard and scrollbar remain native.
   journey.addEventListener('wheel',e=>{
-    if(still()||e.ctrlKey||Math.abs(e.deltaX)>Math.abs(e.deltaY)||e.target.closest('input,textarea,select,video,pre,[contenteditable]'))return;
+    if(still()||e.ctrlKey||Math.abs(e.deltaX)>Math.abs(e.deltaY))return;
+    const input=e.target.closest('textarea,select,[contenteditable]');
+    if(input&&input.matches('textarea')){
+      if((e.deltaY>0&&input.scrollTop+input.clientHeight<input.scrollHeight-4)||(e.deltaY<0&&input.scrollTop>4))return;
+    } else if(input) return;
     const max=journey.scrollHeight-h;
-    if((e.deltaY<0&&journey.scrollTop<=0)||(e.deltaY>0&&journey.scrollTop>=max-1))return;
+    if((e.deltaY<0&&journey.scrollTop<=18)||(e.deltaY>0&&journey.scrollTop>=max-18))return;
     e.preventDefault();e.stopPropagation();
     if(!scrollFrame){scrollTarget=journey.scrollTop;lastWritten=journey.scrollTop;lastTime=performance.now();}
     scrollTarget=Math.max(0,Math.min(max,scrollTarget+e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?h:1)));
